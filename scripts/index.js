@@ -1,4 +1,4 @@
-/* global Tesseract, OCRAD */
+/* global Tesseract */
 
 // Elements
 const progressText = document.getElementById('progress-text')
@@ -14,23 +14,23 @@ const handleSuccess = stream => {
   video.srcObject = stream
   video.play()
 }
-// const getResultsFromCanvas = _ => Tesseract.recognize(canvas, { lang: 'spa' })
-const getResultsFromCanvas = _ => new Promise((resolve, reject) => OCRAD(canvas, resolve))
+const getResultsFromCanvas = _ => Tesseract.recognize(canvas, { lang: 'spa' })
 const takePictureClicked = _ => {
+  context.filter = 'contrast(100%) grayscale(100%)'
   context.drawImage(video, 0, 0, canvas.width, canvas.height)
   progressBar.value = 0
   progressText.innerText = 'Processing...'
   getResultsFromCanvas()
-    .then((text) => {
+    .then(({ text }) => {
       document.getElementById('results').innerText = text
       progressText.innerText = 'Done!'
     })
-    // .progress(({ status, progress }) => {
-    //   if (progress) {
-    //     progressBar.value = progress * 100
-    //   }
-    //   progressText.innerText = status
-    // })
+    .progress(({ status, progress }) => {
+      if (progress) {
+        progressBar.value = progress * 100
+      }
+      progressText.innerText = status
+    })
     .catch(err => { progressText.innerText = err.message })
 }
 
