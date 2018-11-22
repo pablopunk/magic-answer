@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Magic answer</title>
+    <!-- <script src='https://cdn.jsdelivr.net/gh/naptha/tesseract.js@v1.0.14/dist/tesseract.min.js'></script> -->
+    <script src='./scripts/ocrad.js'></script>
+    <style>
+      main {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+    <div>
+      <video id="player" autoplay playsinline muted></video>
+    </div>
+    <div>
+      <button id="takepicture">Take picture</button>
+      <button id="nextcamera">Next camera</button>
+    </div>
+    <div>
+      <progress id="progress-bar" value="0" max="100"></progress>
+      <h3 id="progress-text"></h3>
+    </div>
+    <div>
+      <canvas id="canvas"></canvas>
+    </div>
+    <div>
+      <article id="results"></article>
+    </div>
+    </main>
+    <script src="./scripts/index.js"></script>
+  </body>
+</html>
