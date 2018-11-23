@@ -1,81 +1,92 @@
 /* global Tesseract */
 
-// Elements
-const progressText = document.getElementById('progress-text')
-const progressBar = document.getElementById('progress-bar')
-const video = document.getElementById('player')
-const canvas = document.getElementById('canvas')
-const context = canvas.getContext('2d')
+// Classes
 
-const width = 360 // to scale height
-
-// Functions
-const handleSuccess = stream => {
-  video.srcObject = stream
-  video.play()
-}
-const getResultsFromCanvas = _ => Tesseract.recognize(canvas, { lang: 'spa' })
-const takePictureClicked = _ => {
-  context.filter = 'contrast(100%) grayscale(100%)'
-  context.drawImage(video, 0, 0, canvas.width, canvas.height)
-  progressBar.value = 0
-  progressText.innerText = 'Processing...'
-  getResultsFromCanvas()
-    .then(({ text }) => {
-      document.getElementById('results').innerText = text
-      progressText.innerText = 'Done!'
-    })
-    .progress(({ status, progress }) => {
-      if (progress) {
-        progressBar.value = progress * 100
-      }
-      progressText.innerText = status
-    })
-    .catch(err => { progressText.innerText = err.message })
-}
-
-let devices = []
-const getCamera = (n = 0) => {
-  navigator.mediaDevices.enumerateDevices().then(_devices => {
-    devices = _devices.filter(_ => _.kind === 'videoinput')
-    navigator.mediaDevices
-      .getUserMedia({
-        width: 1080,
-        height: 1920,
-        video: {
-          deviceId: {
-            exact: devices[n].deviceId
-          }
-        }
-      })
-      .then(handleSuccess)
-  })
-}
-
-let cameraN = 0
-const nextCameraClicked = _ => {
-  cameraN++
-  if (cameraN >= devices.length) {
-    cameraN = 0
+const ui = new UI()
+function UI () {
+  this.canvas = document.getElementById('canvas')
+  this.progressText = document.getElementById('progress-text')
+  this.progressBar = document.getElementById('progress-bar')
+  this.video = document.getElementById('player')
+  this.canvas = document.getElementById('canvas')
+  this.context = this.canvas.getContext('2d')
+  this.width = 360
+  this.handleVideoStream = stream => {
+    this.video.srcObject = stream
+    this.video.play()
   }
+  this.progress = ({ status, progress }) => {
+    if (progress) {
+      this.progressBar.value = progress * 100
+    }
+    this.progressText.innerText = status
+  }
+  this.results = (results) => {
+    document.getElementById('results').innerText = results
+  }
+  this.takePictureClicked = _ => {
+    this.context.filter = 'contrast(100%) grayscale(100%)'
+    this.context.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height)
+    this.progress({ status: 'Processing...', progress: 0 })
+    imageToText.getText()
+      .then(({ text }) => {
+        this.results(text)
+        this.progress({ status: 'Done!', progress: 1 })
+      })
+      .progress(this.progress)
+      .catch(err => { this.progress({ status: err.message }) })
+  }
+}
 
-  getCamera(cameraN)
+const imageToText = new ImageToText(ui.canvas)
+function ImageToText (canvas) {
+  this.canvas = canvas
+  this.getText = _ => Tesseract.recognize(this.canvas, { lang: 'spa' })
+}
+
+const camera = new Camera()
+function Camera () {
+  this.devices = []
+  this.selected = 0
+  this.getCamera = (n = 0) => {
+    navigator.mediaDevices.enumerateDevices().then(_devices => {
+      this.devices = _devices.filter(_ => _.kind === 'videoinput')
+      navigator.mediaDevices
+        .getUserMedia({
+          width: 1080,
+          height: 1920,
+          video: {
+            deviceId: {
+              exact: this.devices[n].deviceId
+            }
+          }
+        })
+        .then(ui.handleVideoStream)
+    })
+  }
+  this.next = _ => {
+    this.selected++
+    if (this.selected >= this.devices.length) {
+      this.selected = 0
+    }
+    this.getCamera(this.selected)
+  }
 }
 
 // Listeners
 document
   .getElementById('takepicture')
-  .addEventListener('click', takePictureClicked)
+  .addEventListener('click', ui.takePictureClicked)
 document
   .getElementById('nextcamera')
-  .addEventListener('click', nextCameraClicked)
-video
+  .addEventListener('click', _ => camera.next)
+ui.video
   .addEventListener('canplay', _ => {
-    const height = video.videoHeight / (video.videoWidth / width)
-    video.setAttribute('width', width)
-    video.setAttribute('height', height)
-    canvas.setAttribute('width', width)
-    canvas.setAttribute('height', height)
+    const height = ui.video.videoHeight / (ui.video.videoWidth / ui.width)
+    ui.video.setAttribute('width', ui.width)
+    ui.video.setAttribute('height', height)
+    ui.canvas.setAttribute('width', ui.width)
+    ui.canvas.setAttribute('height', height)
   })
 
-getCamera(0)
+camera.getCamera(0)
