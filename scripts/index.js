@@ -10,7 +10,7 @@ function UI () {
   this.video = document.getElementById('player')
   this.canvas = document.getElementById('canvas')
   this.context = this.canvas.getContext('2d')
-  this.width = 360
+  this.width = '100vh'
   this.handleVideoStream = stream => {
     this.video.srcObject = stream
     this.video.play()
@@ -22,7 +22,7 @@ function UI () {
     this.progressText.innerText = status
   }
   this.results = (results) => {
-    document.getElementById('results').innerText = results
+    document.getElementById('results').innerText = results.replace('\n', '')
   }
   this.takePictureClicked = _ => {
     this.context.filter = 'contrast(100%) grayscale(100%)'
@@ -79,7 +79,7 @@ document
   .addEventListener('click', ui.takePictureClicked)
 document
   .getElementById('nextcamera')
-  .addEventListener('click', _ => camera.next)
+  .addEventListener('click', _ => camera.next())
 ui.video
   .addEventListener('canplay', _ => {
     const height = ui.video.videoHeight / (ui.video.videoWidth / ui.width)
