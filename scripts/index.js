@@ -21,20 +21,41 @@ function UI () {
     }
     this.progressText.innerText = status
   }
-  this.results = (results) => {
+  this.results = results => {
     document.getElementById('results').innerText = results.replace('\n', '')
   }
   this.takePictureClicked = _ => {
-    this.context.filter = 'contrast(100%) grayscale(100%)'
-    this.context.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height)
+    const cropFactor = { width: 1, height: 2 }
+    this.context.filter = 'grayscale(100%)'
+    const sx = 0
+    const sy = 0
+    const sw = this.canvas.width / cropFactor.width
+    const sh = this.canvas.height / cropFactor.height
+    const dx = sx
+    const dy = sy
+    const dw = sw
+    const dh = sh
+
+    console.log(this.canvas.width, this.canvas.height)
+    console.log(
+      sx, sy, sw, sh, dx, dy, dw, dh
+    )
+
+    this.context.drawImage(
+      this.video,
+      sx, sy, sw, sh, dx, dy, dw, dh
+    )
     this.progress({ status: 'Processing...', progress: 0 })
-    imageToText.getText()
+    imageToText
+      .getText()
       .then(({ text }) => {
         this.results(text)
         this.progress({ status: 'Done!', progress: 1 })
       })
       .progress(this.progress)
-      .catch(err => { this.progress({ status: err.message }) })
+      .catch(err => {
+        this.progress({ status: err.message })
+      })
   }
 }
 
@@ -80,13 +101,12 @@ document
 document
   .getElementById('nextcamera')
   .addEventListener('click', _ => camera.next())
-ui.video
-  .addEventListener('canplay', _ => {
-    const height = ui.video.videoHeight / (ui.video.videoWidth / ui.width)
-    ui.video.setAttribute('width', ui.width)
-    ui.video.setAttribute('height', height)
-    ui.canvas.setAttribute('width', ui.width)
-    ui.canvas.setAttribute('height', height)
-  })
+ui.video.addEventListener('canplay', _ => {
+  const height = ui.video.videoHeight / (ui.video.videoWidth / ui.width)
+  ui.video.setAttribute('width', ui.width)
+  ui.video.setAttribute('height', height)
+  ui.canvas.setAttribute('width', ui.width)
+  ui.canvas.setAttribute('height', height)
+})
 
 camera.getCamera(0)

@@ -5,25 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Magic answer</title>
     <link
-      href="https://fonts.googleapis.com/css?family=Roboto+Condensed"
-      rel="stylesheet"
-    />
+                          href="https://fonts.googleapis.com/css?family=Roboto+Condensed"
+                          rel="stylesheet"
+                          />
     <script src="https://cdn.jsdelivr.net/gh/naptha/tesseract.js@v1.0.14/dist/tesseract.min.js"></script>
     <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
-      integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
-      crossorigin="anonymous"
-    />
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+            integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+            crossorigin="anonymous"
+            />
     <style type="text/css">
-      body,
-      html {
-        margin: 0;
-        padding: 0;
-        font-family: 'Roboto Condensed', sans-serif;
-        height: 100%;
-        overflow: hidden; /* no scroll */
-      }
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto Condensed', sans-serif;
+  height: 100%;
+  overflow: hidden; /* no scroll */
+}
       main {
         position: fixed;
         top: 0;
@@ -48,13 +48,13 @@
         margin: 0;
       }
       pre {
-        background-color: rgba(0,0,0,.5);
-        position: fixed;
-        top: 30%;
-        width: 100vw;
-        text-align: center;
+        background-color: #002e99;
+        width: 50vw;
+        height: 70px;
+        overflow-y: scroll;
         color: #eea;
-        padding: 0 3em;
+        padding: 2em;
+        text-align: left;
       }
       progress:not([value]) {
         opacity: 0;
@@ -82,25 +82,43 @@
         width: 100%;
         text-align: center;
       }
+      #canvas {
+        background-color: #a56de2;
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 1em;
+        opacity: .5;
+      }
+      .video-overlay {
+        position: fixed;
+        background-color: rgba(0, 0, 0, .5);
+        margin: 20vh 10vw;
+        height: 50px;
+        width: 100%;
+        z-index: 1000;
+      }
     </style>
   </head>
   <body>
     <main>
-      <div id="progress-container">
-        <h3 id="progress-text"></h3>
-        <progress id="progress-bar" max="100"></progress>
-      </div>
-      <pre id="results">Take a picture to see here some text</pre>
-      <video id="player" autoplay playsinline muted></video>
-      <div id="buttons">
-        <button id="takepicture" class="primary">
-          <i class="fas fa-2x fa-camera"></i>
-        </button>
-        <button id="nextcamera" class="secondary">
-          <i class="fas fa-2x fa-sync-alt"></i>
-        </button>
-      </div>
-      <div><canvas id="canvas" style="display: none"></canvas></div>
+    <div id="progress-container">
+      <h3 id="progress-text"></h3>
+      <progress id="progress-bar" max="100"></progress>
+    </div>
+    <canvas id="canvas"></canvas>
+    <pre id="results">Take a picture</pre>
+    <div class="video-overlay"></div>
+    <video id="player" autoplay playsinline muted></video>
+    <div id="buttons">
+      <button id="takepicture" class="primary">
+        <i class="fas fa-2x fa-camera"></i>
+      </button>
+      <button id="nextcamera" class="secondary">
+        <i class="fas fa-2x fa-sync-alt"></i>
+      </button>
+    </div>
     </main>
     <script src="./scripts/index.js"></script>
   </body>
